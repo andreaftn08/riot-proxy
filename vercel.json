@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/riot.js": {
+      "runtime": "edge"
+    }
+  },
+  "env": {
+    "RIOT_API_KEY": "@riot_api_key"
+  }
+}
