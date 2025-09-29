@@ -1,4 +1,5 @@
-export default async function handler(req, res) {
+// CommonJS version to avoid ESM issues on Vercel
+module.exports = async function handler(req, res) {
   try {
     const q = req.query || {};
     const op = q.op;
@@ -6,14 +7,14 @@ export default async function handler(req, res) {
     const name = q.name || "";
     const id = q.id || "";
 
-    // Diag rapide : vérifie la présence de la clé côté Vercel
+    // diag route
     if (op === "diag") {
       const k = process.env.RIOT_API_KEY || "";
       return res.status(200).json({
         hasKey: !!k,
-        keyPrefix: k.slice(0, 6), // devrait être "RGAPI-"
+        keyPrefix: k.slice(0, 6),
         keyLen: k.length,
-        env: process.env.VERCEL_ENV || null,
+        vercelEnv: process.env.VERCEL_ENV || null,
         node: process.version
       });
     }
@@ -38,23 +39,29 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Unsupported 'op'" });
     }
 
-    const r = await fetch(url, {
+    // Ensure fetch exists (Node 18+). If not, try dynamic import.
+    let _fetch = global.fetch;
+    if (typeof _fetch !== "function") {
+      _fetch = (await import("node-fetch")).default;
+    }
+
+    const r = await _fetch(url, {
       headers: {
         "X-Riot-Token": apiKey,
         "Accept": "application/json",
-        "User-Agent": "LRB-Proxy/1.1 (+vercel)"
-      },
+        "User-Agent": "LRB-Proxy/1.2 (+vercel)"
+      }
     });
 
     const text = await r.text();
     res.status(r.status);
     try {
       res.json(JSON.parse(text));
-    } catch {
+    } catch (e) {
       res.send(text);
     }
   } catch (e) {
     console.error("Proxy error:", e);
     res.status(500).json({ error: "server_error", detail: String(e) });
   }
-}
+};

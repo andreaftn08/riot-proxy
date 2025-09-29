@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/riot.js": {
+      "runtime": "nodejs20.x"
+    }
+  }
+}

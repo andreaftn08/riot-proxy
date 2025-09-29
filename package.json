@@ -1,6 +1,5 @@
 {
-  "name": "riot-proxy-vercel",
+  "name": "riot-proxy-vercel-commonjs",
   "version": "1.0.0",
-  "private": true,
-  "type": "module"
+  "private": true
 }
