@@ -1,6 +1,20 @@
 export default async function handler(req, res) {
   const { op, platform = "euw1", name = "", id = "" } = req.query;
 
+  // DIAG: voir si la clé est bien chargée côté Vercel
+  if (op === "diag") {
+    const k = process.env.RIOT_API_KEY || "";
+    return res.status(200).json({
+      hasKey: !!k,
+      keyPrefix: k.slice(0, 6),   // devrait être "RGAPI-"
+      keyLen: k.length,           // ~ 42-48 selon les clés
+      vercelEnv: process.env.VERCEL_ENV || null,
+      node: process.version
+    });
+  }
+export default async function handler(req, res) {
+  const { op, platform = "euw1", name = "", id = "" } = req.query;
+
   // Require API key set as env var on Vercel
   const apiKey = process.env.RIOT_API_KEY;
   if (!apiKey) {
