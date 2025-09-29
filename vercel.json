@@ -1,3 +1,0 @@
-{
-  "functions": { "api/riot.js": { "runtime": "nodejs18.x" } }
-}
